@@ -62,7 +62,8 @@ final private[scalaml] class MulticlassValidation[T: ToDouble] protected (
    */
   val confusionMatrix: IMatrix = {
     val matrix = Array.fill(classes)(Array.fill(classes)(0))
-    labeled./:(matrix) { case (m, (x, n)) => m(n)(predict(x)) = 1; m }
+    // should accumulate count
+    labeled./:(matrix) { case (m, (x, n)) => m(n)(predict(x)) += 1; m }
   }
 
   private val macroStats: DblPair = {
@@ -83,7 +84,7 @@ final private[scalaml] class MulticlassValidation[T: ToDouble] protected (
   /*
 		 * Compute the recall of the model - classifier using the macro formula
 		 */
-  lazy val recall: Double = macroStats._1
+  lazy val recall: Double = macroStats._2
 
   /*
 		 * Compute the F1 measure for a model - classifier using the macro formula

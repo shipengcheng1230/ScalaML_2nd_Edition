@@ -59,8 +59,10 @@ final private[scalaml] class OneFoldValidation[T](
     // The random ordering of the dataset in the training set
     // and validation set are created by assigning a random value
     // to each labeled observations then sort them
-    val ordLabeledData = labeledData.map((_, Random.nextDouble()))
-      .sortWith(_._2 < _._2).unzip._1
+    /*val ordLabeledData = labeledData.map((_, Random.nextDouble()))
+      .sortWith(_._2 < _._2).map(_._1)*/
+
+    val ordLabeledData = Random.shuffle(labeledData)
 
     // Return the pair of training and validation sets.
     (ordLabeledData.takeRight(adjValSz), ordLabeledData.dropRight(adjValSz))

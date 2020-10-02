@@ -157,6 +157,6 @@ private[scalaml] object MultivariateEM {
     )
     MultivariateNormalMixtureExpectationMaximization.estimate(data, K)
   }
+  
 }
-
 // ------------------------------------------------  EOF ----------------------------------------------------------

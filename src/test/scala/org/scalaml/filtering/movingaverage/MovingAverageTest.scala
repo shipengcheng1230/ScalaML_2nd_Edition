@@ -77,7 +77,7 @@ final class MovingAverageTest extends FlatSpec with Matchers with Logging with A
 
       show(s"Results for [$START_DISPLAY, $WINDOW_DISPLAY] values")
 
-      results.map(window(_)).map(display(_))
+      results.map(window).map(display)
       display(price, sMvOut, "Simple Moving Average")
       display(price, eMvOut, "Exponential Moving Average")
       display(price, wMvOut, "Weighted Moving Average")
@@ -140,7 +140,7 @@ final class MovingAverageTest extends FlatSpec with Matchers with Logging with A
 
 
   private def window(series: DblVec): DblVec =
-    series.drop(START_DISPLAY).take(WINDOW_DISPLAY)
+    series.slice(START_DISPLAY, START_DISPLAY + WINDOW_DISPLAY)
 
   private def display(values: DblVec): Unit = show(format(values, "X", SHORT))
 

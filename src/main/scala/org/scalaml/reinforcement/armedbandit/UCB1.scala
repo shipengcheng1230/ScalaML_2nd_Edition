@@ -34,7 +34,7 @@ private[scalaml] class UCB1[U <: CountedArm](override val arms: List[U]) extends
 
   override def select: U = {
     numActions += 1
-    arms.sortBy(_.score(numActions)).head
+    arms.minBy(_.score(numActions))
   }
 
   /**

@@ -54,8 +54,9 @@ private[scalaml] class MultiNaiveBayesModel[T] protected (
     // log of their posterior probability and selecting the top one (highest
     // posterior probability)
 
-    val <<< = (p1: Likelihood[T], p2: Likelihood[T]) => p1.score(x) > p1.score(x)
+    val <<< = (p1: Likelihood[T], p2: Likelihood[T]) => p1.score(x) > p2.score(x)
     likelihoodSet.sortWith(<<<).head.label
+    // why not just use `maxBy`?
   }
 
   override def likelihoods: Seq[Likelihood[T]] = likelihoodSet

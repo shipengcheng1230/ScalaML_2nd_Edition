@@ -92,6 +92,7 @@ final private[scalaml] class PCA[T: ToDouble](xt: Vector[Array[T]])
    */
   override def |> : PartialFunction[Array[T], Try[Double]] = {
     case x: Array[T] if x.length == dimension(xt) && model.isDefined =>
+      // seems not right, should probably be x multiply model.get.covariance
       Try(margin(x, model.get.eigenvalues))
   }
 

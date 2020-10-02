@@ -24,7 +24,7 @@ import org.scalaml.stats.Stats._
 import org.scalaml.util.DisplayUtils
 
 import scala.annotation.implicitNotFound
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 /**
  * Parameterized class that computes the generic minimun and maximum of a time series. The class
@@ -121,7 +121,10 @@ private[scalaml] class MinMaxVector(series: Vector[Array[Double]]) {
   @throws(classOf[IllegalStateException])
   final def normalize(x: Array[Double]): Try[Array[Double]] = {
     val normalized = minMaxVector.zip(x).map { case (from, to) => from.normalize(to) }
-    if (normalized.contains(None))
+    if (normalized.exists {
+      case Success(_) => false
+      case Failure(_) => true
+    })
       throw new IllegalStateException("MinMax.normalize normalization params undefined")
     Try(normalized.map(_.get).toArray)
   }

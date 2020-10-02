@@ -1,20 +1,20 @@
 /**
-  * Copyright (c) 2013-2017  Patrick Nicolas - Scala for Machine Learning - All rights reserved
-  *
-  * Licensed under the Apache License, Version 2.0 (the "License") you may not use this file
-  * except in compliance with the License. You may obtain a copy of the License at
-  *
-  * http://www.apache.org/licenses/LICENSE-2.0
-  *
-  * Unless required by applicable law or agreed to in writing, software is distributed on an
-  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  *
-  * The source code in this file is provided by the author for the sole purpose of illustrating the
-  * concepts and algorithms presented in "Scala for Machine Learning 2nd edition".
-  * ISBN: 978-1-783355-874-2 Packt Publishing.
-  *
-  * Version 0.99.2
-  */
+ * Copyright (c) 2013-2017  Patrick Nicolas - Scala for Machine Learning - All rights reserved
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License") you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * The source code in this file is provided by the author for the sole purpose of illustrating the
+ * concepts and algorithms presented in "Scala for Machine Learning 2nd edition".
+ * ISBN: 978-1-783355-874-2 Packt Publishing.
+ *
+ * Version 0.99.2
+ */
 package org.scalaml.unsupervised.kmeans
 
 import org.scalaml.{Logging, Resource}
@@ -30,10 +30,9 @@ import scala.language.postfixOps
 import scala.util.Try
 
 
-
 /**
-  * Unit test for K-means
-  */
+ * Unit test for K-means
+ */
 final class KMeansTest extends FlatSpec with Matchers with Logging with Assertable with TestEnv with Resource {
   protected[this] val name = "K-Means"
 
@@ -70,8 +69,8 @@ final class KMeansTest extends FlatSpec with Matchers with Logging with Assertab
     val K = 3
 
     /**
-      * Random value generator
-      */
+     * Random value generator
+     */
     def fGen(id: Int): Double = SCALE * (id * 10.0 + nextDouble)
 
     /*
@@ -90,26 +89,26 @@ final class KMeansTest extends FlatSpec with Matchers with Logging with Assertab
     })
 
 
-      // Create an ordered list of K groups of features sorted by their id
+    // Create an ordered list of K groups of features sorted by their id
     val expected = indexedFeatures
-                .groupBy(_._2)
-                .values.toList
-                .sortWith(_(0)._2 < _(0)._2)
-                .map(_.sortWith(_._1.id < _._1.id))
+      .groupBy(_._2)
+      .values.toList
+      .sortWith(_ (0)._2 < _ (0)._2)
+      .map(_.sortWith(_._1.id < _._1.id))
 
     val features = indexedFeatures.unzip._1
     val kmeans = KMeans[Double](KMeansConfig(K, MAX_ITERS), metric, features.map(_.x))
 
     kmeans.model match {
       case Some(m) =>
-          // sort the model or list of clusters by the sum of features of their centroid
+        // sort the model or list of clusters by the sum of features of their centroid
         val clusters: List[Cluster[Double]] = m
         val sorted = clusters.sortWith(_.center.sum < _.center.sum)
 
-          // Retrieve the membership for each cluster
+        // Retrieve the membership for each cluster
         val memberShip = sorted.map(_.getMembers)
 
-          // Extract the id of expected features for each cluster
+        // Extract the id of expected features for each cluster
         val expectedId = expected.map(_.map(_._1.id))
 
         memberShip.zip(expectedId).foreach { case (c, e) => assertList(c, e.toList) }
@@ -120,33 +119,33 @@ final class KMeansTest extends FlatSpec with Matchers with Logging with Assertab
   }
 
   private def toString(groups: Iterable[Vector[Any]]): String = {
-      groups.map(_.map(_.toString).mkString("\n")).mkString("\n-------\n")
+    groups.map(_.map(_.toString).mkString("\n")).mkString("\n-------\n")
   }
 
 
   private def execute(args: Array[String]): Unit = {
     val START_INDEX = 70
     val NUM_SAMPLES = 50
-      // Incorrect format throws an exception that is caught by the eval.test handler
+    // Incorrect format throws an exception that is caught by the eval.test handler
 
     val KValues = args.map(_.toInt)
 
-      // Nested function to compute the density of K clusters generated from a
-      // set of observations obs. The condition on the argument are caught
-      // by the K-means constructor.
+    // Nested function to compute the density of K clusters generated from a
+    // set of observations obs. The condition on the argument are caught
+    // by the K-means constructor.
 
     def getDensity(K: Int, obs: Vector[Array[Double]]): DblVec = {
       val kmeans = KMeans[Double](KMeansConfig(K, MAX_ITERS), metric, obs)
       kmeans.density.getOrElse(Vector.empty[Double])
     }
 
-      // Extract the price of the security using a data source
+    // Extract the price of the security using a data source
 
     def getPrices: Try[VSeriesSet] = Try {
       val path = getPath(relPath).getOrElse(".")
       symbolFiles(path).map(t => {
         val src = DataSource(t, path, NORMALIZE, 1)
-     //   DataSource(t, path, NORMALIZE, 1)
+        //   DataSource(t, path, NORMALIZE, 1)
         src.map(ds => {
           val extracted = ds.|>(extractor)
 
@@ -155,40 +154,46 @@ final class KMeansTest extends FlatSpec with Matchers with Logging with Assertab
       })
     }
 
-      // Extract a subset of observed prices
+    // Extract a subset of observed prices
 
     def getPricesRange(prices: VSeriesSet) = prices.view.map(_.head.toArray).map(_.drop(START_INDEX).take(NUM_SAMPLES))
 
-      // Basic computation pipeline
+    // Basic computation pipeline
     (for {
       // Retrieve the stocks' prices
       prices <- getPrices
 
-        // Retrieve the stocks' price variation ranges
-      values <- Try { getPricesRange(prices) }
-
-        // Compute the density of the clusters
-      stdDev <- Try { KValues.map(getDensity(_, values.toVector)) }
-
-        // Generates the partial function for this K-means transformation
-      pfnKmeans <- Try {
-         KMeans[Double](KMeansConfig(5, MAX_ITERS), metric, values.toVector) |>
+      // Retrieve the stocks' price variation ranges
+      values <- Try {
+        getPricesRange(prices)
       }
 
-        // Generate the clusters if the partial function is defined.
+      // Compute the density of the clusters
+      stdDev <- Try {
+        KValues.map(getDensity(_, values.toVector))
+      }
+
+      // Generates the partial function for this K-means transformation
+      pfnKmeans <- Try {
+        KMeans[Double](KMeansConfig(5, MAX_ITERS), metric, values.toVector) |>
+      }
+
+      // Generate the clusters if the partial function is defined.
       if pfnKmeans.isDefinedAt(values.head)
-        predict <- pfnKmeans(values.head)
+      predict <- pfnKmeans(values.head)
     } yield {
 
-        // Display training profile
+      // Display training profile
       profile(values.toVector)
       val results =
-          s"""Daily price for ${prices.size} stocks
-                       							| Clusters density\n${stdDev.mkString("\n"
-          )}""".
-            stripMargin
+        s"""Daily price for ${prices.size} stocks
+                       							| Clusters density\n${
+          stdDev.mkString("\n"
+          )
+        }""".
+          stripMargin
       show(results)
-    }).getOrElse( error("failed to train K-means"))
+    }).getOrElse(error("failed to train K-means"))
   }
 
 

@@ -29,5 +29,5 @@ private[scalaml] final class CFThompsonSampling[U <: BetaArm]  (
     arms: List[U]) extends EGreedy[U](epsilon, arms) {
   import scala.util.Random._
 
-  override def select: U = if(nextDouble < epsilon) arms(nextInt(arms.size)) else arms.sortBy(_.sample).head
+  override def select: U = if(nextDouble < epsilon) arms(nextInt(arms.size)) else arms.minBy(_.sample)
 }

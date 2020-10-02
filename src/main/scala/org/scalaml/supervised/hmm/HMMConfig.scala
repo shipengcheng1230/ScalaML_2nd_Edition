@@ -48,7 +48,7 @@ private[scalaml] case class HMMConfig(
 ) extends Config {
   import HMMConfig._
 
-  check(numObs, numStates, numObs, maxIters, eps)
+  check(numObs, numStates, numSymbols, maxIters, eps)
 }
 
 /**

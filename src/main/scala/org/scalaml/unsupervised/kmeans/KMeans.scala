@@ -201,6 +201,8 @@ final private[scalaml] class KMeans[@specialized(Double) T: ToDouble] (
         // re-assign if the observations does not belong to this nearest cluster
         val reassigned = nearestCluster != members(n)
 
+        // there is no remove of reassigned?
+
         // Add the observation to this cluster
         model(nearestCluster) += n
         members(n) = nearestCluster

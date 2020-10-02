@@ -51,6 +51,7 @@ private[scalaml] object Distance {
     )
     val cu: ToDouble[T] = implicitly[ToDouble[T]]
     val cv: ToDouble[U] = implicitly[ToDouble[U]]
+    // `Tuple2Zipped` is computed lazily
     (x, y).zipped.map { case (u, v) => Math.abs(cu.apply(u) - cv.apply(v)) }.sum
   }
 

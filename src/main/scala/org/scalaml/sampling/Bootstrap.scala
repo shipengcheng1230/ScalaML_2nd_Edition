@@ -46,7 +46,7 @@ private[scalaml] final class Bootstrap (
       ).toArray
 
     def createBootstrapSample: Double = s(
-      (0 until inputDistribution.size)./:(mutable.ArrayBuffer[Double]())(
+      inputDistribution.indices./:(mutable.ArrayBuffer[Double]())(
         (buf, _) => {
           val randomValueIndex = randomizer( inputDistribution.size )
           buf += inputDistribution( randomValueIndex )
@@ -54,7 +54,7 @@ private[scalaml] final class Bootstrap (
       ).toVector
     )
 
-    lazy val mean = bootstrappedReplicates.reduce( _ + _ )/numSamples
+    lazy val mean = bootstrappedReplicates.sum/numSamples
 
     final def error: Double = {
       import Math._

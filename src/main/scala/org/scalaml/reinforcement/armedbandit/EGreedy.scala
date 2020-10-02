@@ -38,7 +38,7 @@ private[scalaml] class EGreedy[U <: Arm] (
 
   //var cumulRegret: Double = _
 
-  override def select: U = if(nextDouble < epsilon) arms(nextInt(arms.size)) else arms.sortBy(_.mean).head
+  override def select: U = if(nextDouble < epsilon) arms(nextInt(arms.size)) else arms.minBy(_.mean)
 
   /**
     * Update the number of successes and failures for each arms

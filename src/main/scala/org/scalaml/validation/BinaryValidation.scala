@@ -175,9 +175,11 @@ private[scalaml] object BinaryValidation {
     new BinaryValidation(expected, xt)(predict)
   }
 
-  final def auPRC[T <: AnyVal](binFValidations: List[BinaryValidation[T]]): Double =
-    binFValidations./:(0.0)((auprc, binValidation) =>
+  final def auPRC[T <: AnyVal](binFValidations: List[BinaryValidation[T]]): Double = {
+    // should start at 0.5
+    binFValidations./:(0.5)((auprc, binValidation) =>
       auprc + binValidation.precision - binValidation.recall)
+  }
 }
 
 // --------------------  EOF --------------------------------------------------------
